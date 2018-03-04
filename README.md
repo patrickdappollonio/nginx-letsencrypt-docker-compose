@@ -6,6 +6,18 @@ with TLS termination on Nginx level.
 
 ## Configuring the registry
 
+As a previous note, you should know that **the Docker registry has a non-persistent storage** for the
+images pushed to it, which means that on the next `docker-compose up -d` where your configuration changed,
+you'll loose the images you pushed before. It's possible to make it persistent by adding a volume mounted
+to the filesystem by editing the `volumes` section under the `registry:2` definition and adding a line like:
+
+```
+  - ./registry/images:/var/lib/registry
+```
+
+Which will store the images inside the `registry` folder under `images`. Other alternatives more performant
+are [available in the Docker documentation](https://docs.docker.com/registry/deploying/#storage-customization).
+
 There are a couple of steps you need to follow through. First, create a `htpasswd` file with the user
 and password you want to use for your registry. You can use the `htpasswd` command by itself if you
 know how, or you can use the Docker provided alternative:
