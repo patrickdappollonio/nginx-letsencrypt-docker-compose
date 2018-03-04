@@ -1,0 +1,9 @@
+*.pem
+*.crt
+*.key
+account_key.json
+domains/certs/accounts/
+domains/vhost.d/default
+registry/auth/htpasswd
+domains/vhost.d/*
+!domains/vhost.d/.gitkeep

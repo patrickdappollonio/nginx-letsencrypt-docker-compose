@@ -1,0 +1,54 @@
+version: '2'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro 
+      - ./domains/certs:/etc/nginx/certs:ro
+      - ./domains/vhost.d:/etc/nginx/vhost.d
+      - ./nginx/html:/usr/share/nginx/html
+    ports:
+      - 80:80
+      - 443:443
+
+  le-nginx-proxy:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    restart: always
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./domains/certs:/etc/nginx/certs:rw
+
+  registry:
+    image: registry:2
+    restart: always
+    volumes:
+      - ./domains/certs:/certs:rw
+      - ./registry/auth:/auth:ro
+    environment:
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM=Auth required
+      - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/registry.example.com.crt
+      - REGISTRY_HTTP_TLS_KEY=/certs/registry.example.com.key
+      - VIRTUAL_HOST=registry.example.com
+      - VIRTUAL_PORT=5000
+      - VIRTUAL_PROTO=https
+      - LETSENCRYPT_HOST=registry.example.com
+      - LETSENCRYPT_EMAIL=myemail@example.com
+
+  example:
+    image: patrickdappollonio/hello-docker
+    restart: always
+    ports:
+      - 8000
+    environment:
+      - VIRTUAL_HOST=hello.cloud.example.com
+      - VIRTUAL_PORT=8000
+      - VIRTUAL_PROTO=http
+      - LETSENCRYPT_HOST=registry.example.com
+      - LETSENCRYPT_EMAIL=myemail@example.com
+
