@@ -49,6 +49,6 @@ services:
       - VIRTUAL_HOST=hello.cloud.example.com
       - VIRTUAL_PORT=8000
       - VIRTUAL_PROTO=http
-      - LETSENCRYPT_HOST=registry.example.com
+      - LETSENCRYPT_HOST=hello.cloud.example.com
       - LETSENCRYPT_EMAIL=myemail@example.com
 
